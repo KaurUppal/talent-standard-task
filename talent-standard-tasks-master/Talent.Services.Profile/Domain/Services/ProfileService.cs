@@ -79,7 +79,7 @@ namespace Talent.Services.Profile.Domain.Services
                     Certifications = certification,
                     VisaStatus = profile.VisaStatus,
                     VisaExpiryDate = profile.VisaExpiryDate,
-                    ProfilePhoto = profile.ProfilePhoto,       
+                    ProfilePhoto = profile.ProfilePhoto,
                     LinkedAccounts = profile.LinkedAccounts,
                     JobSeekingStatus = profile.JobSeekingStatus,
                     Email = profile.Email,
@@ -93,14 +93,69 @@ namespace Talent.Services.Profile.Domain.Services
 
             return null;
         }
-    
+
 
 
         public async Task<bool> UpdateTalentProfile(TalentProfileViewModel model, string updaterId)
         {
             //Your code here;
-            throw new NotImplementedException();
-        }
+            try
+            {
+                if (model.Id != null)
+                {
+                    User existingUser = await _userRepository.GetByIdAsync(model.Id);
+
+                    existingUser.FirstName = model.FirstName;
+                    existingUser.MiddleName = model.MiddleName;
+                    existingUser.LastName = model.LastName;
+                    existingUser.Gender = model.Gender;
+
+                    existingUser.Email = model.Email;
+                    existingUser.Phone = model.Phone;
+                    existingUser.MobilePhone = model.MobilePhone;
+                    existingUser.IsMobilePhoneVerified = model.IsMobilePhoneVerified;
+
+                    existingUser.Address = model.Address;
+                    existingUser.Nationality = model.Nationality;
+                    existingUser.VisaStatus = model.VisaStatus;
+                    existingUser.JobSeekingStatus = model.JobSeekingStatus;
+                    existingUser.VisaExpiryDate = model.VisaExpiryDate;
+                    existingUser.Summary = model.Summary;
+                    existingUser.Description = model.Description;
+
+                    existingUser.ProfilePhotoUrl = model.ProfilePhotoUrl;
+                    existingUser.ProfilePhoto = model.ProfilePhoto;
+                    existingUser.VideoName = model.VideoUrl;
+
+                    var languages = new List<UserLanguage>();
+                    foreach(var item in model.Languages)
+                    {
+                        var language = existingUser.Languages.FirstOrDefault(x => x.Id == item.Id);
+                        if (language == null)
+                        {
+                            language = new UserLanguage
+                            {
+                                Id = ObjectId.GenerateNewId().ToString(),
+                                IsDeleted = false,
+                            };
+                            UpdateLanguageFromView(item, language);
+                            languages.Add(language);
+                        }
+                    }
+
+                    existingUser.Languages = languages;
+                    await _userRepository.Update(existingUser);
+                    return true;
+                    
+                }
+                return false;
+
+            }
+            catch (MongoException e)
+            {
+                return false;
+            }
+        } 
 
         public async Task<EmployerProfileViewModel> GetEmployerProfile(string Id, string role)
         {
@@ -353,6 +408,12 @@ namespace Talent.Services.Profile.Domain.Services
         #region Conversion Methods
 
         #region Update from View
+        protected void UpdateLanguageFromView(AddLanguageViewModel model, UserLanguage original)
+        {
+            original.Language = model.Name;
+            original.LanguageLevel = model.Level;
+
+        }
 
         protected void UpdateSkillFromView(AddSkillViewModel model, UserSkill original)
         {

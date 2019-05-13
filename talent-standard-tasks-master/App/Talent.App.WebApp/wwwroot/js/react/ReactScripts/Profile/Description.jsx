@@ -45,7 +45,7 @@ export default class Description extends React.Component {
                     <div className="field">
                         <button type="button" className="ui right floated teal button" >Save</button>
                     </div>
-                    <p>Characters remaining : {characters} / {characterLimit}</p>
+                    <p>{/*Characters remaining : {characters} / {characterLimit}*/}</p>
                 </div>
             </React.Fragment>
         )

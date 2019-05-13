@@ -91,6 +91,7 @@ export default class EmployeeProfile extends React.Component {
 
     //updates component's state and saves data
     updateAndSaveData(newData) {
+        debugger;
         let newSD = Object.assign({}, this.state.employerData, newData)
         this.setState({
             employerData: newSD
@@ -178,6 +179,7 @@ export default class EmployeeProfile extends React.Component {
     }
 
     render() {
+       
         return (
             <BodyWrapper loaderData={this.state.loaderData} reload={this.loadData}>
                 <section className="page-body">

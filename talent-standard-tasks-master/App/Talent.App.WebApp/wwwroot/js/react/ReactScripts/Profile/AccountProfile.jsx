@@ -46,7 +46,6 @@ export default class AccountProfile extends React.Component {
                 }
             },
             loaderData: loaderData,
-
         }
 
         this.updateWithoutSave = this.updateWithoutSave.bind(this)
@@ -65,11 +64,12 @@ export default class AccountProfile extends React.Component {
     }
 
     componentDidMount() {
+        debugger;
         this.loadData();
     }
 
     loadData() {
-        //debugger;
+        debugger;
         var cookies = Cookies.get('talentAuthToken');
         $.ajax({
             url: 'http://localhost:60290/profile/profile/getTalentProfile',
@@ -79,6 +79,7 @@ export default class AccountProfile extends React.Component {
             },
             type: "GET",
             success: function (res) {
+                debugger;
                 this.updateWithoutSave(res.data)
             }.bind(this)
         })
@@ -86,7 +87,9 @@ export default class AccountProfile extends React.Component {
     }
     //updates component's state without saving data
     updateWithoutSave(newValues) {
-        let newProfile = Object.assign({}, this.state.profileData, newValues)
+        debugger;
+        let newProfile = Object.assign({}, this.state.profileData, newValues);
+        console.log("in  updateWithoutSave " + newProfile.address.number);
         this.setState({
             profileData: newProfile
         })
@@ -98,11 +101,15 @@ export default class AccountProfile extends React.Component {
         let newProfile = Object.assign({}, this.state.profileData, newValues)
         this.setState({
             profileData: newProfile
-        }, this.saveProfile)
+        },this.saveProfile);
     }
 
     updateForComponentId(componentId, newValues) {
-        this.updateAndSaveData(newValues)
+        debugger;
+        console.log(newValues);
+        let data = {};
+        data[componentId] = newValues;
+        this.updateAndSaveData(data)
     }
 
     saveProfile() {
@@ -133,12 +140,25 @@ export default class AccountProfile extends React.Component {
     }
 
     render() {
+        debugger;
+        //const profileData = this.state.profileData;
+        const address = this.state.profileData.address;
+        const address1 = {
+            number: this.state.profileData.address.number,
+            street: this.state.profileData.address.street,
+            suburb: this.state.profileData.address.suburb,
+            postCode: this.state.profileData.address.postCode,
+            city: this.state.profileData.address.city,
+            country: this.state.profileData.address.country
+        };
+        console.log("address length " + Object.keys(address).length);
         const profile = {
             firstName: this.state.profileData.firstName,
             lastName: this.state.profileData.lastName,
             email: this.state.profileData.email,
             phone: this.state.profileData.phone
         }
+        console.log("here is Name " + profile.firstName);
         return (
             <BodyWrapper reload={this.loadData} loaderData={this.state.loaderData}>
                 <section className="page-body">
@@ -155,6 +175,7 @@ export default class AccountProfile extends React.Component {
                                                 linkedAccounts={this.state.profileData.linkedAccounts}
                                                 updateProfileData={this.updateWithoutSave}
                                                 saveProfileData={this.updateAndSaveData}
+                                                
                                             />
                                         </FormItemWrapper>
                                         <FormItemWrapper
@@ -181,9 +202,9 @@ export default class AccountProfile extends React.Component {
                                             title='Address'
                                             tooltip='Enter your current address'>
                                             <Address
-                                                addressData={this.state.profileData.address}
-                                                updateProfileData={this.updateWithoutSave}
-                                                saveProfileData={this.updateAndSaveData}
+                                                addressData={address}
+                                                controlFunc={this.updateForComponentId}
+                                                componentId='address'
                                             />
                                         </FormItemWrapper>
                                         <FormItemWrapper
@@ -191,7 +212,8 @@ export default class AccountProfile extends React.Component {
                                             tooltip='Select your nationality'>
                                             <Nationality
                                                 nationalityData={this.state.profileData.nationality}
-                                                saveProfileData={this.updateAndSaveData}
+                                                saveProfileData={this.updateForComponentId}
+                                                componentId='nationality'
                                             />
                                         </FormItemWrapper>
                                         <FormItemWrapper
@@ -200,7 +222,8 @@ export default class AccountProfile extends React.Component {
                                         >
                                             <Language
                                                 languageData={this.state.profileData.languages}
-                                                updateProfileData={this.updateAndSaveData}
+                                                saveData={this.updateForComponentId}
+                                                componentId="languages"
                                             />
                                         </FormItemWrapper>
                                         <FormItemWrapper

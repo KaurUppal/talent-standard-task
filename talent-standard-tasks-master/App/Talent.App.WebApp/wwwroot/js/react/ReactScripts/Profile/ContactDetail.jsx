@@ -5,8 +5,9 @@ import { Location } from '../Employer/CreateJob/Location.jsx';
 export class IndividualDetailSection extends Component {
     constructor(props) {
         super(props)
-
-        const details = props.details ?
+        debugger;
+        const details = props.details
+            ?
             Object.assign({}, props.details)
             : {
                 firstName: "",
@@ -26,6 +27,8 @@ export class IndividualDetailSection extends Component {
         this.saveContact = this.saveContact.bind(this)
         this.renderEdit = this.renderEdit.bind(this)
         this.renderDisplay = this.renderDisplay.bind(this)
+        if (props.details)
+        console.log("here is length in contact " + Object.keys(this.props.details).length);
     }
 
     openEdit() {

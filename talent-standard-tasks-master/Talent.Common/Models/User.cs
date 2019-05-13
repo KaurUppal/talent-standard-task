@@ -38,6 +38,7 @@ namespace Talent.Common.Models
         public List<UserCertification> Certifications { get; set; }
         public List<UserExperience> Experience { get; set; }
         public UserLocation Location { get; set; }
+
         public string ProfilePhoto { get; set; }
         public string ProfilePhotoUrl { get; set; }
         public string VideoName { get; set; }

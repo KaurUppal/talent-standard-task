@@ -7,20 +7,14 @@ import { Button, Icon } from 'semantic-ui-react';
 export default class Language extends React.Component {
     constructor(props) {
         super(props);
-        const languageData = props.languageData ? Object.assign({}, props.languageData) :
-            [{
-                language: "",
-                languageLevel: ""
-            }];
+        const languageData = props.languageData;
         this.state = {
             showAdd: false,
             showEdit: false,
             languages: languageData,
             newLanguage: {
                 name: "",
-                level: "",
-                id: "",
-                currentUserId:""
+                level: ""
             }
         }
         this.closeAdd = this.closeAdd.bind(this);
@@ -37,13 +31,31 @@ export default class Language extends React.Component {
     }
 
     addLanguage() {
+        debugger;
+        const data = [{ "name": "hindi", "level": "basic" }];
+        const languages = this.state.languages;
+        const newLanguage = this.state.newLanguage;
+        console.log("name: " + newLanguage.name + ", level: " + newLanguage.level);
+        debugger
         this.setState({
-            showAdd: false
-        })
+            showAdd: false,
+            languages: [...languages, newLanguage]
+        }, () => {
+            this.props.saveData(this.props.componentId,
+                this.state.languages)
+            });
+        
     }
 
     handleChange() {
         //const data = event.
+        debugger;
+        let data = Object.assign({}, this.state.newLanguage);
+        data[event.target.name] = event.target.value;
+        this.setState({
+            newLanguage: data
+        })
+        
     }
 
     componentDidMount() {
@@ -53,6 +65,10 @@ export default class Language extends React.Component {
 
     openAdd() {
         this.setState({
+            newLanguage: {
+                name: "",
+                level: ""
+            },
             showAdd: true
         })
     }
@@ -107,23 +123,26 @@ export default class Language extends React.Component {
             "Fluent",
             "Native",
             "Bilingual"];
-
+        let language = this.state.newLanguage;
         const languageLevelOptions = options.map((x) => <option key={x} value={x}>{x}</option>);
 
         return (
             <div className='ui grid'>
                 <div className="five wide column">
                     <input
-                        name="language"
+                        name="name"
                         //{this.state.newAddressData.number}
                         onChange={this.handleChange}
                         maxLength={20}
                         placeholder="Language Name"
+                        value={language.name}
                     />
                 </div>
                 <div className="five wide column">
                     <select
-                        name="languageLevel"
+                        name="level"
+                        value={language.level}
+                        onChange={this.handleChange}
                     >
                         <option value="0">Language Level</option>
                         {languageLevelOptions}
@@ -143,9 +162,9 @@ export default class Language extends React.Component {
     }
 
     renderLanguageWithOrWithoutData() {
-        let languages = this.state.languages;
+        let languages = this.props.languageData;
         return (
-            this.state.languages.language
+            languages[0]
                 ?
                 languages.map(language => < LanguageData openEdit={this.openEdit} showEdit={this.state.showEdit} closeEdit={this.closeEdit} language={language} />) 
                 :

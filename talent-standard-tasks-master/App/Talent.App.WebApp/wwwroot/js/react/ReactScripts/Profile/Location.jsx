@@ -9,7 +9,8 @@ import { countries } from '../Employer/common.js'
 export class Address extends React.Component {
     constructor(props) {
         super(props);
-        const addressData = props.addressData ?
+        let addressData =props.addressData
+                ?
             Object.assign({}, props.addressData) :
             {
                 number: "",
@@ -25,7 +26,10 @@ export class Address extends React.Component {
         }
         this.closeEdit = this.closeEdit.bind(this);
         this.openEdit = this.openEdit.bind(this);
-
+        this.handleChange = this.handleChange.bind(this);
+        this.saveAddress = this.saveAddress.bind(this);
+        if (props.addressData)
+        console.log("here is address " + this.state.newAddressData.number);
     }
 
     componentDidMount() {
@@ -47,12 +51,13 @@ export class Address extends React.Component {
 
     saveAddress() {
         const address = Object.assign({}, this.state.newAddressData);
-        this.props.updateProfileData(address);
-        this.props.saveProfileData(address);
+        this.props.controlFunc(this.props.componentId, address);
+        this.closeEdit();
     }
 
     handleChange() {
-        //debugger;
+        console.log(this.state.newAddressData.number);
+       
         const data = Object.assign({}, this.state.newAddressData)
         data[event.target.name] = event.target.value
         this.setState({
@@ -61,7 +66,7 @@ export class Address extends React.Component {
     }
 
     renderDisplay() {
-        let address = this.state.newAddressData;
+        let address = this.props.addressData;
         return (
             <div className='ui sixteen wide column'>
                 <React.Fragment>
@@ -94,7 +99,7 @@ export class Address extends React.Component {
                     <ChildSingleInput
                         inputType="text"
                         label="Name"
-                        name="name"
+                        name="street"
                         value={this.state.newAddressData.name}
                         controlFunc={this.handleChange}
                         maxLength={20}
@@ -117,6 +122,7 @@ export class Address extends React.Component {
                 <div className="six wide column">
                     <SelectCountry
                         label="Country"
+                        name="Country"
                         location={this.state.newAddressData}
                         handleChange={this.handleChange}
                     />
@@ -124,6 +130,7 @@ export class Address extends React.Component {
                 <div className="six wide column">
                     <SelectCity
                         label="City"
+                        name="city"
                         location={this.state.newAddressData}
                         handleChange={this.handleChange}
                     />
@@ -166,7 +173,7 @@ export class Nationality extends React.Component {
         this.state = {
             newnationalityData: nationalityData
         }
-       
+        this.handleChange = this.handleChange.bind(this);
     }
 
     componentDidMount() {
@@ -175,14 +182,18 @@ export class Nationality extends React.Component {
     }
 
     handleChange() {
-        const nationality = event.target.value;
-        this.props.saveProfileData(nationality);
+        const data = event.target.value;
+        this.setState({
+            newnationalityData: data
+        })
+        this.props.saveProfileData(this.props.componentId, data);
+       
        
     }
     
     render() {
         let countriesOptions = [];
-        const selectedCountry = this.state.newnationalityData;
+        const selectedCountry = this.props.nationalityData;
         countriesOptions = Object.keys(countries).map((x) => <option key={x} value={x}>{x}</option>);
 
         return (
@@ -193,7 +204,7 @@ export class Nationality extends React.Component {
                         placeholder="Country"
                         value={selectedCountry}
                         onChange={this.handleChange}
-                        name="country">
+                        name="nationality">
 
                         <option value="">Select your Nationality</option>
                         {countriesOptions}
