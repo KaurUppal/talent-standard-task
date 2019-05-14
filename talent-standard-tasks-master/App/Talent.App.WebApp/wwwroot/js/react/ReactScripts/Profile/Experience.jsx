@@ -8,29 +8,30 @@ import moment from 'moment';
 
 export default class Experience extends React.Component {
     constructor(props) {
-        const experienceData = [{
-            id: 1,
-            company: "abc",
-            position: "abc",
-            responsibilities: "",
-            start: Date.now,
-            end: Date.now
-        },
-            {
-                id: 2,
-                company: "abc",
-                position: "abc",
-                responsibilities: "",
-                start: Date.now,
-                end: Date.now
-            }
-        ];
+        const experienceData = [...props.experienceData];
+        //[{
+        //    id: 1,
+        //    company: "abc",
+        //    position: "abc",
+        //    responsibilities: "",
+        //    start: Date.now,
+        //    end: Date.now
+        //},
+        //    {
+        //        id: 2,
+        //        company: "abc",
+        //        position: "abc",
+        //        responsibilities: "",
+        //        start: Date.now,
+        //        end: Date.now
+        //    }
+        //];
             //props.experienceData;
         super(props);
         this.state = {
             showEdit: false,
             showAdd: false,
-            experience: experienceData,
+            experiences: experienceData,
             newExperience: {
                 company: "",
                 position: "",
@@ -123,7 +124,7 @@ export default class Experience extends React.Component {
     };
 
     renderDisplay() {
-        let experience = this.state.experience;
+        let experiences = this.props.experienceData;
         return (
             <div className='ui sixteen wide column'>
                 <table className='ui single line table'>
@@ -140,7 +141,7 @@ export default class Experience extends React.Component {
                         </tr>
                     </thead>
                     <tbody>
-                        {experience[0] ?
+                        {experiences[0]?
                         experience.map(experience => <ExperienceData key={experience.id} experience={experience} closeEdit={this.closeEdit} openEdit={this.openEdit}
                             updateExperience={this.updateExperience} deleteExperience={this.deleteExperience} handleChangeDate={this.handleChangeDate}
                                 handleChange={this.handleChange} showEdit={this.state.showEdit} id={this.state.id}
@@ -152,12 +153,12 @@ export default class Experience extends React.Component {
     }
 
     renderWithOrWithoutData() {
-        let experience = this.state.experience;
+        let experiences = this.props.experienceData;
        
         return (
            // experience[0] ?
                 
-                experience.map(experience => <ExperienceData key={experience.id} experience={experience} closeEdit={this.closeEdit} openEdit={this.openEdit}
+                experiences.map(experience => <ExperienceData key={experience.id} experience={experience} closeEdit={this.closeEdit} openEdit={this.openEdit}
                     updateExperience={this.updateExperience} deleteExperience={this.deleteExperience} handleChangeDate={this.handleChangeDate}
                         handleChange={this.handleChange} showEdit={this.state.showEdit} id={this.state.id}
                 />)

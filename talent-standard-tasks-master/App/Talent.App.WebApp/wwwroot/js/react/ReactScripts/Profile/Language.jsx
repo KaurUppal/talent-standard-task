@@ -7,7 +7,7 @@ import { Button, Icon } from 'semantic-ui-react';
 export default class Language extends React.Component {
     constructor(props) {
         super(props);
-        const languageData = props.languageData;
+        const languageData = [...props.languageData];
         this.state = {
             showAdd: false,
             showEdit: false,
@@ -31,18 +31,17 @@ export default class Language extends React.Component {
     }
 
     addLanguage() {
-        debugger;
-        const data = [{ "name": "hindi", "level": "basic" }];
         const languages = this.state.languages;
         const newLanguage = this.state.newLanguage;
-        console.log("name: " + newLanguage.name + ", level: " + newLanguage.level);
-        debugger
+        let data = {};
+   
         this.setState({
             showAdd: false,
             languages: [...languages, newLanguage]
         }, () => {
-            this.props.saveData(this.props.componentId,
-                this.state.languages)
+            debugger;
+            data["languages"] = this.state.languages;
+            this.props.updateProfileData(data);
             });
         
     }

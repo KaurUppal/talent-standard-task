@@ -6,17 +6,15 @@ import { Button, Icon } from 'semantic-ui-react';
 export default class Skill extends React.Component {
     constructor(props) {
         super(props);
-        const skillData = props.skillData ? Object.assign({}, props.skillData) :
-            [
-                {
-                    name: "",
-                    level:""
-                }
-            ];
+        const skillData = [...props.skillData];
         this.state = {
             showAdd: false,
             showEdit: false,
-            skills: skillData
+            skills: skillData,
+            newSkill: {
+                name: "",
+                level: ""
+            }
         }
         this.closeAdd = this.closeAdd.bind(this);
         this.openAdd = this.openAdd.bind(this)
@@ -33,7 +31,16 @@ export default class Skill extends React.Component {
     }
 
     addSkill() {
-
+        const skills = this.state.skills;
+        let newSkill = this.state.newSkill;
+        let data = {};
+        this.setState({
+            addSkill: false,
+            skills: [...skills, newSkill]
+        }, () => {
+            data["skills"] = this.state.skills;
+            this.props.updateSkillData(data);
+        });
     }
 
     deleteSkill(skill) {
@@ -41,6 +48,11 @@ export default class Skill extends React.Component {
     }
 
     handleChange() {
+        let data = Object.assign({}, this.state.newSkill);
+        data[event.target.name] = event.target.value;
+        this.setState({
+            newSkill: data
+        });
 
     }
 
@@ -78,19 +90,23 @@ export default class Skill extends React.Component {
         const skillLevelOptions = options.map((x) => <option key={x} value={x}>{x}</option>);
 
         return (
+
             <div className='ui grid'>
                 <div className="five wide column">
                     <input
-                        name="skill"
+                        name="name"
                         //{this.state.newAddressData.number}
                         onChange={this.handleChange}
                         maxLength={20}
                         placeholder="Skill Name"
+                        value={this.state.newSkill.name}
                     />
                 </div>
                 <div className="five wide column">
                     <select
-                        name="skillLevel"
+                        name="level"
+                        onChange={this.handleChange}
+                        value={this.state.newSkill.level}
                     >
                         <option value="0">Skill Level</option>
                         {skillLevelOptions}
@@ -138,10 +154,12 @@ export default class Skill extends React.Component {
     }
 
     renderSkillWithOrWithoutData() {
+        let skills = this.props.skillData;
         return (
-            this.state.skills.name
+            this.props.skillData
                 ?
-                <SkillData openEdit={this.openEdit} showEdit={this.state.showEdit} closeEdit={this.closeEdit} />
+                skills.map(skill => < SkillData openEdit={this.openEdit}
+                    showEdit={this.state.showEdit} closeEdit={this.closeEdit} skill={skill} />)
                 :
                 <tr></tr>
         )

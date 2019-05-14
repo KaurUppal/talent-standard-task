@@ -143,7 +143,40 @@ namespace Talent.Services.Profile.Domain.Services
                         }
                     }
 
+                    var skills = new List<UserSkill>();
+                    foreach(var item in model.Skills)
+                    {
+                        var skill = existingUser.Skills.FirstOrDefault(x => x.Id == item.Id);
+                        if(skill==null)
+                        {
+                            skill = new UserSkill
+                            {
+                                Id = ObjectId.GenerateNewId().ToString(),
+                                IsDeleted = false,
+                            };
+                            UpdateSkillFromView(item, skill);
+                            skills.Add(skill);
+                        }
+                    }
+
+                    var experiences = new List<UserExperience>();
+                    foreach (var item in model.Experience)
+                    {
+                        var experience = existingUser.Experience.FirstOrDefault(x => x.Id == item.Id);
+                        if (experience == null)
+                        {
+                            experience = new UserExperience
+                            {
+                                Id = ObjectId.GenerateNewId().ToString(),
+                            };
+                            UpdateExperienceFromView(item, experience);
+                            experiences.Add(experience);
+                        }
+                    }
+                   
                     existingUser.Languages = languages;
+                    existingUser.Skills = skills;
+                    existingUser.Experience = experiences;
                     await _userRepository.Update(existingUser);
                     return true;
                     
@@ -408,6 +441,15 @@ namespace Talent.Services.Profile.Domain.Services
         #region Conversion Methods
 
         #region Update from View
+        protected void UpdateExperienceFromView(ExperienceViewModel model, UserExperience original)
+        {
+            original.Position = model.Position;
+            original.Company = model.Company;
+            original.Start = model.Start;
+            original.End = model.End;
+            original.Responsibilities = model.Responsibilities;  
+        }
+
         protected void UpdateLanguageFromView(AddLanguageViewModel model, UserLanguage original)
         {
             original.Language = model.Name;

@@ -222,8 +222,7 @@ export default class AccountProfile extends React.Component {
                                         >
                                             <Language
                                                 languageData={this.state.profileData.languages}
-                                                saveData={this.updateForComponentId}
-                                                componentId="languages"
+                                                updateProfileData={this.updateAndSaveData}
                                             />
                                         </FormItemWrapper>
                                         <FormItemWrapper
