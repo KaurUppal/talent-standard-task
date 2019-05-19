@@ -5,7 +5,6 @@ import { Location } from '../Employer/CreateJob/Location.jsx';
 export class IndividualDetailSection extends Component {
     constructor(props) {
         super(props)
-        debugger;
         const details = props.details
             ?
             Object.assign({}, props.details)

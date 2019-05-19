@@ -34,7 +34,11 @@ namespace Talent.Common.Services
         public async Task<string> SaveFile(IFormFile file, FileType type)
         {
             //Your code here;
-            throw new NotImplementedException();
+            var fileName = "";
+            
+            
+            return fileName;
+
         }
 
         public async Task<bool> DeleteFile(string id, FileType type)

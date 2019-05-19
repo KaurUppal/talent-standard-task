@@ -8,48 +8,30 @@ import moment from 'moment';
 
 export default class Experience extends React.Component {
     constructor(props) {
-        const experienceData = [...props.experienceData];
-        //[{
-        //    id: 1,
-        //    company: "abc",
-        //    position: "abc",
-        //    responsibilities: "",
-        //    start: Date.now,
-        //    end: Date.now
-        //},
-        //    {
-        //        id: 2,
-        //        company: "abc",
-        //        position: "abc",
-        //        responsibilities: "",
-        //        start: Date.now,
-        //        end: Date.now
-        //    }
-        //];
-            //props.experienceData;
+        const experienceData = props.experienceData.map(x => Object.assign({}, x));
         super(props);
         this.state = {
             showEdit: false,
             showAdd: false,
             experiences: experienceData,
             newExperience: {
+                id: 0,
                 company: "",
                 position: "",
                 responsibilities: "",
-                start: Date.now,
-                end: Date.now
+                start: moment("2019-05-16T10:38:21.68Z"),
+                end: moment()
             },
             id:0
         };
         this.closeAdd = this.closeAdd.bind(this);
         this.openAdd = this.openAdd.bind(this);
-        this.handleChange = this.handleChange.bind(this);
-        this.handleChangeDate = this.handleChangeDate.bind(this);
         this.addExperience = this.addExperience.bind(this);
         this.closeEdit = this.closeEdit.bind(this);
         this.openEdit = this.openEdit.bind(this);
         this.updateExperience = this.updateExperience.bind(this);
         this.addExperience = this.addExperience.bind(this);
+        this.deleteExperience = this.deleteExperience.bind(this);
     
     };
 
@@ -57,16 +39,32 @@ export default class Experience extends React.Component {
         $('.ui.button.address')
             .popup();
     }
+
+    //onchange handle functions
     handleChange() {
+        let data = Object.assign({}, this.state.newExperience);
+        data[event.target.name] = event.target.value;
+        this.setState({
+            newExperience: data
+        })
 
     }
 
-    handleChangeDate() {
+   
 
-    }
+    //functions to control buttons
 
     openAdd() {
+        let id = this.state.newExperience.id;
         this.setState({
+            newExperience: {
+                id: id+1,
+                company: "",
+                position: "",
+                responsibilities: "",
+                start: moment(),
+                end: moment()
+            },
             showAdd: true
         })
     }
@@ -77,11 +75,10 @@ export default class Experience extends React.Component {
         })
     }
 
-    openEdit(id) {
-
+    openEdit(experience) {
         this.setState({
             showEdit: true,
-            id: id
+            id: experience.id
         })
     }
 
@@ -91,15 +88,42 @@ export default class Experience extends React.Component {
         })
     }
 
-    updateExperience() {
+    updateExperience(updatedExperience) {
+        const experience = this.props.experienceData.map(x => Object.assign({}, x));
+        let index = experience.findIndex((e) => e.id === updatedExperience.id);
+        if (index != -1) {
+            experience[index] = updatedExperience;
+        }
+        this.setState({
+            showEdit: false
+        });
 
+        this.props.updateProfileData({
+            experience
+        });
     }
 
-    addExperience() {
-
+    addExperience(newExperience) {
+        const experience = this.props.experienceData.map(x => Object.assign({}, x));
+        experience.push(newExperience);
+        this.setState({
+            showAdd: false
+        });
+        this.props.updateProfileData({
+            experience
+        });
     }
 
-    deleteExperience() {
+    deleteExperience(deletedExperience) {
+        const experience = this.props.experienceData.map(x => Object.assign({}, x));
+        let index = experience.findIndex((e) => e.id === deletedExperience.id);
+        if (index != -1) {
+            experience.splice(index, 1);
+        }
+        this.props.updateProfileData({
+            experience
+        });
+
 
     }
 
@@ -110,8 +134,6 @@ export default class Experience extends React.Component {
        
         return (<div>
             <AddEditExperience
-                handleChange={this.handleChange}
-                handleChangeDate={this.handleChangeDate}
                 experience={experience}
                 buttonText="Save"
                 addExperience={this.addExperience}
@@ -141,31 +163,19 @@ export default class Experience extends React.Component {
                         </tr>
                     </thead>
                     <tbody>
-                        {experiences[0]?
-                        experience.map(experience => <ExperienceData key={experience.id} experience={experience} closeEdit={this.closeEdit} openEdit={this.openEdit}
-                            updateExperience={this.updateExperience} deleteExperience={this.deleteExperience} handleChangeDate={this.handleChangeDate}
-                                handleChange={this.handleChange} showEdit={this.state.showEdit} id={this.state.id}
+                        {experiences[0] ?
+                            experiences.map(experience => <ExperienceData key={experience.id} experience={experience} closeEdit={this.closeEdit} openEdit={this.openEdit}
+                                updateExperience={this.updateExperience} deleteExperience={this.deleteExperience} closeEdit={this.closeEdit}
+                                showEdit={this.state.showEdit} id={this.state.id}
                             />) : <tr></tr>}
+                        
                     </tbody> 
                     
                 </table>
             </div>)
     }
 
-    renderWithOrWithoutData() {
-        let experiences = this.props.experienceData;
-       
-        return (
-           // experience[0] ?
-                
-                experiences.map(experience => <ExperienceData key={experience.id} experience={experience} closeEdit={this.closeEdit} openEdit={this.openEdit}
-                    updateExperience={this.updateExperience} deleteExperience={this.deleteExperience} handleChangeDate={this.handleChangeDate}
-                        handleChange={this.handleChange} showEdit={this.state.showEdit} id={this.state.id}
-                />)
-            //: <tbody><tr></ tr></tbody>
-            )
-    }
-
+   
 
     render() {    
         return (
@@ -182,35 +192,37 @@ class ExperienceData extends React.Component {
 
     render() {
         let showEdit = this.props.showEdit;
-        let experience = this.props.experience;
+        let experience = Object.assign({}, this.props.experience);
+       
+        let editExperience = Object.assign({}, this.props.experience);
+        editExperience.start = moment(experience.start);
+        editExperience.end = moment(experience.end);
         let id = this.props.id;
        
             
         return (
-            showEdit && (experience.id==id) ?
+            showEdit && (experience.id == id) ?
                 <tr><td colSpan="6">
                     <AddEditExperience
-                        handleChange={this.props.handleChange}
-                        handleChangeDate={this.props.handleChangeDate}
                         buttonText="Update"
-                        experience={experience}
+                        experience={editExperience}
                         addExperience={this.props.updateExperience}
                         closeEdit={this.props.closeEdit}
                     />
-                    </td>
+                </td>
                 </tr>
                 :
                 <tr>
                     <td>{experience.company}</td>
                     <td>{experience.position}</td>
                     <td>{experience.responsibilities}</td>
-                    <td>{experience.start}</td>
-                    <td>{experience.end}</td>
+                    <td>{experience.start.toString()}</td>
+                    <td>{experience.end.toString()}</td>
                     <td>
                         <Button icon className="ui right floated button" onClick={() => this.props.deleteExperience(experience)}>
                             <Icon name='close' />
                         </Button>
-                        <Button icon className="ui right floated button" onClick={() => this.props.openEdit(experience.id)}>
+                        <Button icon className="ui right floated button" onClick={() => this.props.openEdit(experience)}>
                             <Icon name='pencil' />
                         </Button>
                     </td>
@@ -222,42 +234,66 @@ class ExperienceData extends React.Component {
 class AddEditExperience extends React.Component {
     constructor(props) {
         super(props);
-        this.state = {}
+        const experience = Object.assign({}, props.experience);
+        this.state = {
+            newExperience: experience
+        };
+        this.handleChange = this.handleChange.bind(this);
+        this.handleChangeDate = this.handleChangeDate.bind(this);
+    }
+
+    //
+    handleChangeDate(date, name) {
+        let data = Object.assign({}, this.state.newExperience);
+        data[name] = date;
+        this.setState({
+            newExperience: data
+        })
+    }
+
+    handleChange() {
+        let data = Object.assign({}, this.state.newExperience);
+        data[event.target.name] = event.target.value;
+        this.setState({
+            newExperience: data
+        })
     }
 
     render() {
-        let experience = this.props.experience;
+        let experience = this.state.newExperience;
         return (<div className='ui grid'>
             <div className='eight wide column'>
-                <ChildSingleInput
-                    inputType="text"
-                    label="Company"
-                    name="company"
-                    value={experience.company}
-                    controlFunc={this.props.handleChange}
-                    maxLength={20}
-                    placeholder="Company"
-                    errorMessage="Please enter a valid Company name"
-                />
+                <div className="field">
+                    <label>Company</label>
+                    <input
+                        type="text"
+                        name="company"
+                        value={experience.company}
+                        onChange={this.handleChange}
+                        maxLength={20}
+                        placeholder="Company"
+                    />
+                </div>
             </div>
             <div className='eight wide column'>
-                <ChildSingleInput
-                    inputType="text"
-                    label="Position"
-                    name="position"
-                    value={experience.position}
-                    controlFunc={this.props.handleChange}
-                    maxLength={20}
-                    placeholder="Position"
-                    errorMessage="Please enter the valid position"
-                />
+                <div className="field">
+                    <label>Position</label>
+                    <input
+                        type="text"
+                        name="position"
+                        value={experience.position}
+                        onChange={this.handleChange}
+                        maxLength={20}
+                        placeholder="Position"
+                        />
+                </div>
             </div>
             <div className='eight wide column'>
                 <div className='field'>
                     <label>Start Date:</label>
                     <DatePicker
-                        selected={experience.startDate}
-                        onChange={(date) => this.props.handleChangeDate(date, "startDate")}
+                        selected={experience.start}
+                        onChange={(date) => this.handleChangeDate(date, "start")}
                         minDate={moment()}
                     />
                 </div>
@@ -266,23 +302,24 @@ class AddEditExperience extends React.Component {
                 <div className='field'>
                     <label>End Date:</label>
                     <DatePicker
-                        selected={experience.endDate}
-                        onChange={(date) => this.props.handleChangeDate(date, "endDate")}
+                        selected={experience.end}
+                        onChange={(date) => this.handleChangeDate(date, "end")}
                         minDate={moment()}
                     />
                 </div>
             </div>
-            <div className='sixteen wide column'>
-                <ChildSingleInput
-                    inputType="text"
-                    label="Responsibilities"
-                    name="responsibilities"
-                    value={experience.responsibilities}
-                    controlFunc={this.props.handleChange}
-                    maxLength={200}
-                    placeholder="Responsibilities"
-                    errorMessage="not valid Responsibilities"
-                />
+                <div className='sixteen wide column'>
+                <div className="field">
+                    <label>Responsibilities</label>
+                        <input
+                        type="text"
+                        name="responsibilities"
+                        value={experience.responsibilities}
+                        onChange={this.handleChange}
+                        maxLength={200}
+                        placeholder="Responsibilities"
+                        />
+                    </div>
             </div>
             <div className="four wide column">
                 <button type="button" className="ui teal button" onClick={() => this.props.addExperience(experience)}>{this.props.buttonText}</button>

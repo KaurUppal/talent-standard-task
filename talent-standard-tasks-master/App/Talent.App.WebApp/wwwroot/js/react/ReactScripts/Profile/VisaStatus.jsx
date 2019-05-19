@@ -5,7 +5,7 @@ import moment from 'moment';
 
 export default class VisaStatus extends React.Component {
     constructor(props) {
-        const visaExpiryDate = props.visaExpiryDate ? props.visaExpiryDate : "";
+        const visaExpiryDate = props.visaExpiryDate ? moment(props.visaExpiryDate) : moment();
         const visaStatus = props.visaStatus ? props.visaStatus : "";
         super(props);
         this.state ={
@@ -18,6 +18,7 @@ export default class VisaStatus extends React.Component {
         this.closeAdd = this.closeAdd.bind(this);
         this.openAdd = this.openAdd.bind(this)
         this.handleChange = this.handleChange.bind(this);
+        this.handleChangeDate = this.handleChange.bind(this);
         this.closeEdit = this.closeEdit.bind(this);
         this.openEdit = this.openEdit.bind(this);
         this.save = this.save.bind(this);
@@ -29,18 +30,36 @@ export default class VisaStatus extends React.Component {
     }
 
     save() {
+        let visaStatus = this.state.visaStatus;
+        let visaExpiryDate = this.state.visaExpiryDate;
 
-
+        this.props.updateProfileData({
+            visaStatus,
+            visaExpiryDate
+        })
     }
 
     handleChange(event) {
         debugger;
-        let name = event.target.name;
         let value = event.target.value;
         let visaStatus = value;
         this.setState({
             visaStatus: visaStatus
         })
+
+        if (visaStatus == "Citizen" || visaStatus == "Permanent Resident") {
+            this.props.updateProfileData({
+                visaStatus
+            })
+        }
+    }
+
+    handleChangeDate(date, name) {
+        if (name == "visaExpiryDate") {
+            this.setState({
+                visaExpiryDate: date
+            })
+        }
     }
 
     openAdd() {
@@ -84,8 +103,10 @@ export default class VisaStatus extends React.Component {
         if (visaStatus == "Work Visa" || visaStatus == "Student Visa") {
 
             expiryDate = <div className="field"><label>Visa expiry date</label><DatePicker
-                
+                name="visaExpiryDate"
+                selected={this.state.visaExpiryDate}
                 minDate={moment()}
+                onChange={(date) => this.handleChangeDate(date, "visaExpiryDate")}
             /></div>;
 
             saveButton = <div className="field"><br></br><button type="button" className="ui teal button" name="save" onClick={this.save}>save</button></div>
@@ -99,7 +120,7 @@ export default class VisaStatus extends React.Component {
                     <div className="field">
                         <label>Visa type</label>
                         <select
-                            value={this.state.visaStatus}
+                            value={this.props.visaStatus}
                             onChange={this.handleChange}
                             name="visaStatus">
                             <option value="">Visa Status</option>

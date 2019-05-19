@@ -7,12 +7,14 @@ import { Button, Icon } from 'semantic-ui-react';
 export default class Language extends React.Component {
     constructor(props) {
         super(props);
-        const languageData = [...props.languageData];
+        const languageData = props.languageData.map(x => Object.assign({}, x));
         this.state = {
             showAdd: false,
             showEdit: false,
+            languageId:"",
             languages: languageData,
             newLanguage: {
+                id: 0,
                 name: "",
                 level: ""
             }
@@ -23,48 +25,46 @@ export default class Language extends React.Component {
         this.addLanguage = this.addLanguage.bind(this);
         this.closeEdit = this.closeEdit.bind(this);
         this.openEdit = this.openEdit.bind(this);
+        this.updateLanguage = this.updateLanguage.bind(this);
+        this.deleteLanguage = this.deleteLanguage.bind(this);
     };
- 
-//functions to handle buttons
-    deleteLanguage() {
-        
-    }
-
-    addLanguage() {
-        const languages = this.state.languages;
-        const newLanguage = this.state.newLanguage;
-        let data = {};
-   
-        this.setState({
-            showAdd: false,
-            languages: [...languages, newLanguage]
-        }, () => {
-            debugger;
-            data["languages"] = this.state.languages;
-            this.props.updateProfileData(data);
-            });
-        
-    }
-
-    handleChange() {
-        //const data = event.
-        debugger;
-        let data = Object.assign({}, this.state.newLanguage);
-        data[event.target.name] = event.target.value;
-        this.setState({
-            newLanguage: data
-        })
-        
-    }
 
     componentDidMount() {
         $('.ui.button.address')
             .popup();
     }
 
+//functions to handle buttons
+    deleteLanguage(id) {
+        const languages = this.props.languageData.map(x => Object.assign({}, x));
+        let index = languages.findIndex((e) => e.id === id);
+        languages.splice(index, 1);
+
+        this.props.updateProfileData({
+            languages
+        })
+    }
+
+    addLanguage() {
+        const languages = this.props.languageData.map(x => Object.assign({}, x));
+        const newLanguage = this.state.newLanguage;
+        languages.push(newLanguage);
+
+        this.setState({
+            showAdd: false
+        });
+
+        this.props.updateProfileData({
+            languages
+        })
+        
+    }
+
     openAdd() {
+        let id = this.state.newLanguage.id;
         this.setState({
             newLanguage: {
+                id: id+1,
                 name: "",
                 level: ""
             },
@@ -78,8 +78,11 @@ export default class Language extends React.Component {
         })
     }
 
-    openEdit() {
+    openEdit(language) {
+
         this.setState({
+            languageId: language.id,
+            newLanguage: language,
             showEdit: true
         })
     }
@@ -90,8 +93,33 @@ export default class Language extends React.Component {
         })
     }
 
-    renderDisplay() {
+    updateLanguage(updatedLanguage) {
+        const languages = this.props.languageData.map(x => Object.assign({}, x));
+        const index = languages.findIndex((e) => e.id === updatedLanguage.id);
+        languages[index].name = updatedLanguage.name;
+        languages[index].level = updatedLanguage.level;
+       
+        this.setState({
+            showEdit: false
+        })
+        this.props.updateProfileData({
+            languages
+        })
+    }
 
+    //functions to handle input
+    handleChange() {
+        debugger
+        let data = Object.assign({}, this.state.newLanguage);
+        data[event.target.name] = event.target.value;
+        this.setState({
+            newLanguage: data
+        })
+
+    }
+
+
+    renderDisplay() {
         return (
             <div className='ui sixteen wide column'>
                 <table className="ui single line table">
@@ -116,7 +144,6 @@ export default class Language extends React.Component {
     }
 
     renderAdd() {
-        let showEdit = this.state.showEdit;
         const options = ["Basic",
             "Conversational",
             "Fluent",
@@ -143,7 +170,7 @@ export default class Language extends React.Component {
                         value={language.level}
                         onChange={this.handleChange}
                     >
-                        <option value="0">Language Level</option>
+                        <option value="Language Level">Language Level</option>
                         {languageLevelOptions}
                     </select>
                 </div>
@@ -162,10 +189,16 @@ export default class Language extends React.Component {
 
     renderLanguageWithOrWithoutData() {
         let languages = this.props.languageData;
+        if (languages[0])
+        console.log(languages[0].name);
         return (
             languages[0]
                 ?
-                languages.map(language => < LanguageData openEdit={this.openEdit} showEdit={this.state.showEdit} closeEdit={this.closeEdit} language={language} />) 
+                languages.map(language => < LanguageData key={language.id} openEdit={this.openEdit} showEdit={this.state.showEdit}
+                    closeEdit={this.closeEdit} language={language} id={this.state.languageId} handleChange={this.handleChange}
+                    updateLanguage={this.updateLanguage} deleteLanguage={this.deleteLanguage}
+                />
+                ) 
                 :
                 <tr></tr>
             )
@@ -183,35 +216,61 @@ export default class Language extends React.Component {
 class LanguageData extends React.Component {
     constructor(props) {
         super(props);
-        
+        let updatedLanguage = Object.assign({}, this.props.language);
+        this.state = {
+            updatedLanguage : updatedLanguage
+        }
+
+        this.handleChange = this.handleChange.bind(this);
+    }
+
+    handleChange() {
+        debugger;
+        let updatedLanguage = this.state.updatedLanguage;
+        updatedLanguage[event.target.name] = event.target.value;
+
+        this.setState({
+            updatedLanguage: updatedLanguage
+        })
+        console.log(this.props.language.name);
     }
 
     render() {
         let showEdit = this.props.showEdit;
         let language = this.props.language;
-
+        let id = this.props.id;
         return (
-            showEdit ?
+            showEdit && (language.id == id) ?
                 <tr>
-                <td><input value={language.language} /></td>
-                <td><input value={language.languageLevel} /></td>
-                <td>
-                    <button className="ui blue basic button" onClick={() => this.props.updateProfileData(language)}>Update</button>
-                    <button className="ui red basic button" onClick={this.props.closeEdit}>Cancel</button></td>
-            </tr>
+                    <td>
+                        <input value={this.state.updatedLanguage.name}
+                            onChange={this.handleChange}
+                            name="name"
+                        />
+                    </td>
+                    <td>
+                        <input value={this.state.updatedLanguage.level}
+                            onChange={this.handleChange}
+                            name="level"
+                        />
+                    </td>
+                    <td>
+                        <button className="ui blue basic button" onClick={() => this.props.updateLanguage(this.state.updatedLanguage)}>Update</button>
+                        <button className="ui red basic button" onClick={this.props.closeEdit}>Cancel</button>
+                    </td>
+                </tr>
                 :
                 <tr>
-                    <td>{language.language}</td>
-                    <td>{language.languageLevel}</td>
+                    <td>{language.name}</td>
+                    <td>{language.level}</td>
                     <td>
-                        <Button icon className="ui right floated button" onClick={() => this.props.deleteLanguage(language)}>
-                        <Icon name='close' />
+                        <Button icon className="ui right floated button" onClick={() => this.props.deleteLanguage(language.id)}>
+                            <Icon name='close' />
                         </Button>
-                        <Button icon className="ui right floated button" onClick={this.props.openEdit}>
-                        <Icon name='pencil' />
-                    </Button>
-                </td>
-            </tr>
-            )
-    }
+                        <Button icon className="ui right floated button" onClick={() => this.props.openEdit(language)}>
+                            <Icon name='pencil' />
+                        </Button>
+                    </td>
+                </tr>
+            ) }
 }

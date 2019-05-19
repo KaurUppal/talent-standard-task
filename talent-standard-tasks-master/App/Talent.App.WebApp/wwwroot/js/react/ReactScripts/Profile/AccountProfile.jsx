@@ -64,12 +64,10 @@ export default class AccountProfile extends React.Component {
     }
 
     componentDidMount() {
-        debugger;
         this.loadData();
     }
 
     loadData() {
-        debugger;
         var cookies = Cookies.get('talentAuthToken');
         $.ajax({
             url: 'http://localhost:60290/profile/profile/getTalentProfile',
@@ -79,7 +77,6 @@ export default class AccountProfile extends React.Component {
             },
             type: "GET",
             success: function (res) {
-                debugger;
                 this.updateWithoutSave(res.data)
             }.bind(this)
         })
@@ -87,7 +84,6 @@ export default class AccountProfile extends React.Component {
     }
     //updates component's state without saving data
     updateWithoutSave(newValues) {
-        debugger;
         let newProfile = Object.assign({}, this.state.profileData, newValues);
         console.log("in  updateWithoutSave " + newProfile.address.number);
         this.setState({
@@ -105,7 +101,6 @@ export default class AccountProfile extends React.Component {
     }
 
     updateForComponentId(componentId, newValues) {
-        debugger;
         console.log(newValues);
         let data = {};
         data[componentId] = newValues;
@@ -140,17 +135,8 @@ export default class AccountProfile extends React.Component {
     }
 
     render() {
-        debugger;
-        //const profileData = this.state.profileData;
         const address = this.state.profileData.address;
-        const address1 = {
-            number: this.state.profileData.address.number,
-            street: this.state.profileData.address.street,
-            suburb: this.state.profileData.address.suburb,
-            postCode: this.state.profileData.address.postCode,
-            city: this.state.profileData.address.city,
-            country: this.state.profileData.address.country
-        };
+
         console.log("address length " + Object.keys(address).length);
         const profile = {
             firstName: this.state.profileData.firstName,
@@ -268,8 +254,7 @@ export default class AccountProfile extends React.Component {
                                             <VisaStatus
                                                 visaStatus={this.state.profileData.visaStatus}
                                                 visaExpiryDate={this.state.profileData.visaExpiryDate}
-                                                updateProfileData={this.updateWithoutSave}
-                                                saveProfileData={this.updateAndSaveData}
+                                                updateProfileData={this.updateAndSaveData}
                                             />
                                         </FormItemWrapper>
                                         <FormItemWrapper

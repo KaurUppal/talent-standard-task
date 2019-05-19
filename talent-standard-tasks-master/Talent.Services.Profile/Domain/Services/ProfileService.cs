@@ -80,6 +80,7 @@ namespace Talent.Services.Profile.Domain.Services
                     VisaStatus = profile.VisaStatus,
                     VisaExpiryDate = profile.VisaExpiryDate,
                     ProfilePhoto = profile.ProfilePhoto,
+                    ProfilePhotoUrl = profile.ProfilePhotoUrl,
                     LinkedAccounts = profile.LinkedAccounts,
                     JobSeekingStatus = profile.JobSeekingStatus,
                     Email = profile.Email,
@@ -138,9 +139,9 @@ namespace Talent.Services.Profile.Domain.Services
                                 Id = ObjectId.GenerateNewId().ToString(),
                                 IsDeleted = false,
                             };
-                            UpdateLanguageFromView(item, language);
-                            languages.Add(language);
                         }
+                        UpdateLanguageFromView(item, language);
+                        languages.Add(language);
                     }
 
                     var skills = new List<UserSkill>();
@@ -154,9 +155,9 @@ namespace Talent.Services.Profile.Domain.Services
                                 Id = ObjectId.GenerateNewId().ToString(),
                                 IsDeleted = false,
                             };
-                            UpdateSkillFromView(item, skill);
-                            skills.Add(skill);
                         }
+                        UpdateSkillFromView(item, skill);
+                        skills.Add(skill);
                     }
 
                     var experiences = new List<UserExperience>();
@@ -169,9 +170,9 @@ namespace Talent.Services.Profile.Domain.Services
                             {
                                 Id = ObjectId.GenerateNewId().ToString(),
                             };
-                            UpdateExperienceFromView(item, experience);
-                            experiences.Add(experience);
                         }
+                        UpdateExperienceFromView(item, experience);
+                        experiences.Add(experience);
                     }
                    
                     existingUser.Languages = languages;
@@ -358,7 +359,35 @@ namespace Talent.Services.Profile.Domain.Services
         public async Task<bool> UpdateTalentPhoto(string talentId, IFormFile file)
         {
             //Your code here;
-            throw new NotImplementedException();
+            var fileExtention = Path.GetExtension(file.FileName);
+            List<String> acceptedExtions = new List<string> {".jpg", ".png", ".gif", ".jpeg" };
+
+            if (fileExtention != null && !acceptedExtions.Contains(fileExtention.ToLower()))
+            {
+                return false;
+            }
+
+            var profile = (await _userRepository.Get(x => x.Id == talentId)).SingleOrDefault();
+            if(profile == null)
+            {
+                return false;
+            }
+
+            var newFileName = await _fileService.SaveFile(file, FileType.ProfilePhoto);
+            if (!string.IsNullOrWhiteSpace(newFileName))
+            {
+                var oldFileName = profile.ProfilePhoto;
+                if(!string.IsNullOrWhiteSpace(oldFileName))
+                {
+                    await _fileService.DeleteFile(oldFileName, FileType.ProfilePhoto);
+                }
+                profile.ProfilePhoto = newFileName;
+                profile.ProfilePhotoUrl = await _fileService.GetFileURL(newFileName, FileType.ProfilePhoto);
+                await _userRepository.Update(profile);
+                return true;
+            }
+
+            return false;
         }
 
         public async Task<bool> AddTalentVideo(string talentId, IFormFile file)

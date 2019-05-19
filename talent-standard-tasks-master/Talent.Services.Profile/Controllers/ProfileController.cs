@@ -243,7 +243,14 @@ namespace Talent.Services.Profile.Controllers
         public async Task<ActionResult> UpdateProfilePhoto()
         {
             //Your code here;
-            throw new NotImplementedException();
+            var returnVaue = false; 
+            var id = _userAppContext.CurrentUserId;
+            IFormFile file = Request.Form.Files[0];
+            if(file != null)
+            {
+               returnVaue = await _profileService.UpdateTalentPhoto(id, file);
+            }
+            return Json(new { Success = returnVaue });
         }
 
         [HttpPost("updateTalentCV")]

@@ -6,11 +6,12 @@ import { Button, Icon } from 'semantic-ui-react';
 export default class Skill extends React.Component {
     constructor(props) {
         super(props);
-        const skillData = [...props.skillData];
+        const skillData = props.skillData.map(x => Object.assign({},x));
         this.state = {
             showAdd: false,
             showEdit: false,
             skills: skillData,
+            id:"",
             newSkill: {
                 name: "",
                 level: ""
@@ -22,6 +23,8 @@ export default class Skill extends React.Component {
         this.addSkill = this.addSkill.bind(this);
         this.closeEdit = this.closeEdit.bind(this);
         this.openEdit = this.openEdit.bind(this);
+        this.updateSkill = this.updateSkill.bind(this);
+        this.deleteSkill = this.deleteSkill.bind(this);
     };
 
   
@@ -30,35 +33,27 @@ export default class Skill extends React.Component {
             .popup();
     }
 
+    //functions for buttons
     addSkill() {
-        const skills = this.state.skills;
-        let newSkill = this.state.newSkill;
-        let data = {};
+        let skills = this.props.skillData.map(x => Object.assign({}, x));
+        skills.push(this.state.newSkill);
+
         this.setState({
-            addSkill: false,
-            skills: [...skills, newSkill]
-        }, () => {
-            data["skills"] = this.state.skills;
-            this.props.updateSkillData(data);
-        });
-    }
+            showAdd: false
+        })
 
-    deleteSkill(skill) {
-
-    }
-
-    handleChange() {
-        let data = Object.assign({}, this.state.newSkill);
-        data[event.target.name] = event.target.value;
-        this.setState({
-            newSkill: data
-        });
-
+        this.props.updateProfileData({
+            skills
+        })
     }
 
     openAdd() {
         this.setState({
-            showAdd: true
+            showAdd: true,
+            newSkill: {
+                name: "",
+                level: ""
+            }
         })
     }
 
@@ -67,10 +62,14 @@ export default class Skill extends React.Component {
             showAdd: false
         })
     }
-    openEdit() {
+    openEdit(skill) {
+        let data = Object.assign({}, skill);
+
         this.setState({
-            showEdit: true
-        })
+            showEdit: true,
+            newSkill: data,
+            id: data.id
+        });
     }
 
     closeEdit() {
@@ -78,6 +77,44 @@ export default class Skill extends React.Component {
             showEdit: false
         })
     }
+
+    updateSkill(updatedSkill) {
+        debugger;
+        const skills = this.props.skillData.map(x => Object.assign({}, x));
+        let index = skills.findIndex((e) => e.id === updatedSkill.id);
+        console.log(index);
+
+        skills[index].name = updatedSkill.name;
+        skills[index].level = updatedSkill.level;
+
+        this.setState({
+            showEdit: false
+        });
+
+        this.props.updateProfileData({
+            skills
+        })
+            
+    }
+
+    deleteSkill(skill) {
+        const skills = this.props.skillData.map(x => Object.assign({}, x));
+        let index = skills.findIndex((e) => e.id === skill.id);
+        skills.splice(index, 1);
+
+        this.props.updateProfileData({ skills });
+    }
+
+    handleChange() {
+        debugger;
+        let data = Object.assign({}, this.state.newSkill);
+        data[event.target.name] = event.target.value;
+        this.setState({
+            newSkill: data
+        });
+
+    }
+
 
     renderAdd() {
 
@@ -95,7 +132,6 @@ export default class Skill extends React.Component {
                 <div className="five wide column">
                     <input
                         name="name"
-                        //{this.state.newAddressData.number}
                         onChange={this.handleChange}
                         maxLength={20}
                         placeholder="Skill Name"
@@ -108,7 +144,7 @@ export default class Skill extends React.Component {
                         onChange={this.handleChange}
                         value={this.state.newSkill.level}
                     >
-                        <option value="0">Skill Level</option>
+                        <option value="Skill Level">Skill Level</option>
                         {skillLevelOptions}
                     </select>
                 </div>
@@ -124,11 +160,6 @@ export default class Skill extends React.Component {
 
         )
     }
-
-    renderEdit() {
-
-        return (<div></div>)
-    };
 
     renderDisplay() {
 
@@ -156,10 +187,14 @@ export default class Skill extends React.Component {
     renderSkillWithOrWithoutData() {
         let skills = this.props.skillData;
         return (
-            this.props.skillData
+            this.props.skillData[0]
                 ?
-                skills.map(skill => < SkillData openEdit={this.openEdit}
-                    showEdit={this.state.showEdit} closeEdit={this.closeEdit} skill={skill} />)
+                skills.map(skill => < SkillData openEdit={this.openEdit} key={skill.id}
+                    showEdit={this.state.showEdit} closeEdit={this.closeEdit} skill={skill}
+                    handleChange={this.handleChange} updateSkill={this.updateSkill}
+                    deleteSkill={this.deleteSkill}
+                    id={this.state.id}
+                />)
                 :
                 <tr></tr>
         )
@@ -177,7 +212,23 @@ export default class Skill extends React.Component {
 class SkillData extends React.Component {
     constructor(props) {
         super(props);
+        const data = Object.assign({}, this.props.skill);
+        this.state = {
+            updatedSkill: data
+        }
 
+        this.handleChange = this.handleChange.bind(this);
+    }
+
+
+    handleChange() {
+        debugger;
+        let data = this.state.updatedSkill;
+        data[event.target.name] = event.target.value;
+        this.setState({
+            updatedSkill: data
+        });
+        
     }
 
     render() {
@@ -185,23 +236,29 @@ class SkillData extends React.Component {
         let skill = this.props.skill;
 
         return (
-            showEdit ?
+            showEdit && (this.props.id === skill.id) ?
                 <tr>
-                    <td><input value={skill.skill} /></td>
-                    <td><input value={skill.skillLevel} /></td>
+                    <td><input value={this.state.updatedSkill.name}
+                        onChange={this.handleChange}
+                        name="name"
+                    /></td>
+                    <td><input value={this.state.updatedSkill.level}
+                        onChange={this.handleChange}
+                        name="level"
+                    /></td>
                     <td>
-                        <button className="ui blue basic button" onClick={() => this.props.updateSkillData(skill)}>Update</button>
+                        <button className="ui blue basic button" onClick={() => this.props.updateSkill(this.state.updatedSkill)}>Update</button>
                         <button className="ui red basic button" onClick={this.props.closeEdit}>Cancel</button></td>
                 </tr>
                 :
                 <tr>
-                    <td>Data</td>
-                    <td>data</td>
+                    <td>{skill.name}</td>
+                    <td>{skill.level}</td>
                     <td>
                         <Button icon className="ui right floated button" onClick={() => this.props.deleteSkill(skill)}>
                             <Icon name='close' />
                         </Button>
-                        <Button icon className="ui right floated button" onClick={this.props.openEdit}>
+                        <Button icon className="ui right floated button" onClick={() => this.props.openEdit(skill)}>
                             <Icon name='pencil' />
                         </Button>
                     </td>
