@@ -377,7 +377,7 @@ namespace Talent.Services.Profile.Domain.Services
             if (!string.IsNullOrWhiteSpace(newFileName))
             {
                 var oldFileName = profile.ProfilePhoto;
-                if(!string.IsNullOrWhiteSpace(oldFileName))
+                if (!string.IsNullOrWhiteSpace(oldFileName))
                 {
                     await _fileService.DeleteFile(oldFileName, FileType.ProfilePhoto);
                 }
@@ -386,8 +386,7 @@ namespace Talent.Services.Profile.Domain.Services
                 await _userRepository.Update(profile);
                 return true;
             }
-
-            return false;
+            return false; ;
         }
 
         public async Task<bool> AddTalentVideo(string talentId, IFormFile file)

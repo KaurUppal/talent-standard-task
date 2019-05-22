@@ -8,6 +8,7 @@ using Microsoft.AspNetCore.Hosting;
 using Microsoft.AspNetCore.Http;
 using Talent.Common.Aws;
 using Talent.Common.Contracts;
+using System.Web;
 
 namespace Talent.Common.Services
 {
@@ -28,23 +29,55 @@ namespace Talent.Common.Services
         public async Task<string> GetFileURL(string id, FileType type)
         {
             //Your code here;
-            throw new NotImplementedException();
+            var fileUrl = "";
+            string pathWeb = _environment.WebRootPath;
+            if (id != null && type == FileType.ProfilePhoto)
+            {
+                string pathString = pathWeb + _tempFolder ;
+                fileUrl = pathString + id;
+                
+            }
+            return fileUrl;
         }
 
         public async Task<string> SaveFile(IFormFile file, FileType type)
         {
-            //Your code here;
-            var fileName = "";
+            // unique file name
+            var myUniqueFileName = "";
+            string pathWeb = "";
+            pathWeb = _environment.WebRootPath;
+
+            if (file != null && type == FileType.ProfilePhoto && pathWeb != "")
+            {
+                string pathString = pathWeb + _tempFolder;
+                myUniqueFileName = $@"{DateTime.Now.Ticks}_" + file.FileName;
+                var path = pathString + myUniqueFileName;
+                using (var fileStream = new FileStream(path, FileMode.Create))
+                {
+                   await file.CopyToAsync(fileStream);
+                }
+                Console.WriteLine(path);
+            }
+           
+            return myUniqueFileName;
             
-            
-            return fileName;
 
         }
 
         public async Task<bool> DeleteFile(string id, FileType type)
         {
             //Your code here;
-            throw new NotImplementedException();
+            var returnValue = false;
+            string pathWeb = _environment.WebRootPath;
+            if (id != null && type == FileType.ProfilePhoto)
+            {
+                string pathString = pathWeb + _tempFolder;
+                var fileUrl = pathString + id;
+                File.Delete(fileUrl);
+                returnValue = true;
+
+            }
+            return returnValue;
         }
 
 

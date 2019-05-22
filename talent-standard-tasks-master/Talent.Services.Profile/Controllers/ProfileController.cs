@@ -248,9 +248,10 @@ namespace Talent.Services.Profile.Controllers
             IFormFile file = Request.Form.Files[0];
             if(file != null)
             {
+                Console.WriteLine("here is the file name " + file.FileName);
                returnVaue = await _profileService.UpdateTalentPhoto(id, file);
             }
-            return Json(new { Success = returnVaue });
+            return Json(new { Success = returnVaue});
         }
 
         [HttpPost("updateTalentCV")]

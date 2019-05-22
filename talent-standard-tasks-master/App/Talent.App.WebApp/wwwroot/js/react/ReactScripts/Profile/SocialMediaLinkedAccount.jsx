@@ -72,29 +72,28 @@ export default class SocialMediaLinkedAccount extends React.Component {
     renderLinkedEdit() {
         return (
             <div className='ui sixteen wide column'>
-                <ChildSingleInput
-                    inputType="text"
-                    label="Linkedln"
-                    name="linkedln"
-                    value="aman"
-                    //{this.state.newLinked.linkedln}
-                    controlFunc={this.handleChange}
-                    maxLength={150}
-                    placeholder="Enter your Linkedln url"
-                    errorMessage="Please enter a valid Linkedln url"
-                    width={10}
-                />
-                <ChildSingleInput
-                    inputType="text"
-                    label="GitHub"
-                    name="github"
-                    value="deep"
-                    //{this.state.newLinked.github}
-                    controlFunc={this.handleChange}
-                    maxLength={150}
-                    placeholder="Enter your GitHub url"
-                    errorMessage="Please enter a valid GitHub url"
-                />
+                <div className="field">
+                    <label>Linkedln</label>
+                    <input
+                        type="text"
+                        name="linkedln"
+                        value={this.state.newLinked.linkedln}
+                        onChange={this.handleChange}
+                        maxLength={150}
+                        placeholder="Enter your Linkedln url"
+                        />
+                </div>
+                <div className="field">
+                    <label>GitHub</label>
+                    <input
+                        type="text"
+                        name="github"
+                        value={this.state.newLinked.github}
+                        onChange={this.handleChange}
+                        maxLength={150}
+                        placeholder="Enter your GitHub url"
+                    />
+                </div>
                 <button type="button" className="ui teal button" onClick={this.saveContact}>Save</button>
                 <button type="button" className="ui button" onClick={this.closeEdit}>Cancel</button>
             </div>

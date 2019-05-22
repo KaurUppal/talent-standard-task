@@ -10,7 +10,8 @@ export default class PhotoUpload extends Component {
         this.state = {
             imageId: imageId,
             uploadButton: "none",
-            newFile:""
+            newFileUrl: null,
+            newFile: null
         }
         this.fileSelectedChange = this.fileSelectedChange.bind(this);
         this.fileUpload = this.fileUpload.bind(this);
@@ -36,6 +37,7 @@ export default class PhotoUpload extends Component {
                 if (res.success == true) {
                     TalentUtil.notification.show("Profile updated sucessfully", "success", null, null)
                 } else {
+                   
                     TalentUtil.notification.show("Profile did not update successfully", "error", null, null)
                 }
 
@@ -49,23 +51,29 @@ export default class PhotoUpload extends Component {
     }
 
     fileSelectedChange() {
-        debugger;
+       
+        let acceptedExt = ["image/png", "image/jpg", "image/jpeg", "image/gif"];
         
         let selectedFile = event.target.files[0];
         console.log(event.target.files[0]);
-        if (selectedFile.type == "image/png" || selectedFile.type == "image/jpg") {
+        if (this.state.newFile) {
+            URL.revokeObjectURL(newFile);
+        }
+        if (acceptedExt.includes(selectedFile.type)) {
             this.setState({
                 uploadButton: "",
-                newFile: selectedFile
+                newFileUrl: URL.createObjectURL(event.target.files[0]),
+                newFile: event.target.files[0]
             })
         }
     }
     
 
     render() {
-        let imageId = this.props.imageId;
-        if (this.state.newFile) {
-            imageId = this.state.newFile;
+        
+        let imageId = this.props.imageId ? this.props.imageId : "https://react.semantic-ui.com/images/wireframe/square-image.png";
+        if (this.state.newFileUrl) {
+            imageId = this.state.newFileUrl;
         }
         
         return (
@@ -74,15 +82,12 @@ export default class PhotoUpload extends Component {
                     <h1>Profile Photo</h1>
                 </div>
                 <div className="column">
-                    <form action={this.fileUpload} method="post">
-                    <Button htmlFor="file" as="label" className="ui small circular image" ><img src={this.state.imageId}
+                    <Button htmlFor="file" as="label" className="ui small circular image" ><img src={imageId}
                         />
                     </Button>
                         <br></br>
-                        <button type="submit" style={{ display: this.state.uploadButton, }} className="ui teal button"><i className="upload icon"></i>Upload</button>
-                        <input type="file" id="file" style={{ display: "none" }} onChange={this.fileSelectedChange} />
-                    </form>
-                    
+                        <button type="submit" style={{ display: this.state.uploadButton, }} onClick={this.fileUpload} className="ui teal button"><i className="upload icon"></i>Upload</button>
+                        <input type="file" id="file" style={{ display: "none" }} onChange={this.fileSelectedChange} />  
                 </div>
                 
             </div>
