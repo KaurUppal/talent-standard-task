@@ -243,15 +243,15 @@ namespace Talent.Services.Profile.Controllers
         public async Task<ActionResult> UpdateProfilePhoto()
         {
             //Your code here;
-            var returnVaue = false; 
+            var returnValue = false; 
             var id = _userAppContext.CurrentUserId;
             IFormFile file = Request.Form.Files[0];
             if(file != null)
             {
                 Console.WriteLine("here is the file name " + file.FileName);
-               returnVaue = await _profileService.UpdateTalentPhoto(id, file);
+               returnValue = await _profileService.UpdateTalentPhoto(id, file);
             }
-            return Json(new { Success = returnVaue});
+            return Json(new { Success = returnValue});
         }
 
         [HttpPost("updateTalentCV")]

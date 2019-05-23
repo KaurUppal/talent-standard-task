@@ -22,7 +22,7 @@ namespace Talent.Common.Services
             IAwsService awsService)
         {
             _environment = environment;
-            _tempFolder = "images\\";
+            _tempFolder = "\\images\\";
             _awsService = awsService;
         }
 
@@ -30,10 +30,11 @@ namespace Talent.Common.Services
         {
             //Your code here;
             var fileUrl = "";
-            string pathWeb = _environment.WebRootPath;
+            string pathWeb = _environment.ContentRootPath;
+
             if (id != null && type == FileType.ProfilePhoto)
             {
-                string pathValue = pathWeb + _tempFolder ;
+                var pathValue = pathWeb + _tempFolder ;
                 fileUrl = pathValue + id;
             }
             return fileUrl;
@@ -44,7 +45,7 @@ namespace Talent.Common.Services
             // unique file name
             var myUniqueFileName = "";
             string pathWeb = "";
-            pathWeb = _environment.WebRootPath;
+            pathWeb = _environment.ContentRootPath;
 
             if (file != null && type == FileType.ProfilePhoto && pathWeb != "")
             {
@@ -67,7 +68,7 @@ namespace Talent.Common.Services
         {
             //Your code here;
             var returnValue = false;
-            string pathWeb = _environment.WebRootPath;
+            string pathWeb = _environment.ContentRootPath;
             if (id != null && type == FileType.ProfilePhoto)
             {
                 string pathString = pathWeb + _tempFolder;

@@ -23,6 +23,8 @@ using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Logging;
 using Microsoft.Extensions.Options;
 using Talent.Common.Aws;
+using Microsoft.Extensions.FileProviders;
+using System.IO;
 
 namespace Talent.Services.Profile
 {
@@ -79,6 +81,7 @@ namespace Talent.Services.Profile
             services.AddScoped<IUserAppContext, UserAppContext>();
             services.AddScoped<IProfileService, ProfileService>();
             services.AddScoped<IFileService, FileService>();
+            services.AddDirectoryBrowser();
         }
 
         // This method gets called by the runtime. Use this method to configure the HTTP request pipeline.
@@ -90,6 +93,13 @@ namespace Talent.Services.Profile
             }
             app.UseCors("AllowWebAppAccess");
             app.UseMvc();
+
+            app.UseFileServer(new FileServerOptions
+            {
+                FileProvider = new PhysicalFileProvider(
+                env.ContentRootPath + "\\images"),
+                EnableDirectoryBrowsing = true
+            });
         }
     }
 }

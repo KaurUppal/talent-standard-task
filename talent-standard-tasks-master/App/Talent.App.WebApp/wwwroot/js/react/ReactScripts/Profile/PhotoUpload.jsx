@@ -14,26 +14,28 @@ export default class PhotoUpload extends Component {
             newFile: null
         }
         this.fileSelectedChange = this.fileSelectedChange.bind(this);
-        //this.fileUpload = this.fileUpload.bind(this);
+        this.fileUpload = this.fileUpload.bind(this);
     };
 
     fileUpload() {
         debugger;
         let file = this.state.newFile;
         const form = new FormData();
-        form.append('files', file);
+        form.append('file', file);
         var url = this.props.savePhotoUrl;
 
         var cookies = Cookies.get('talentAuthToken');
         $.ajax({
             url: url,
             headers: {
-                'Authorization': 'Bearer ' + cookies,
-                'Content-Type': false
+                'Authorization': 'Bearer ' + cookies
             },
             type: "POST",
             data: form,
+            processData: false,
+            contentType: false,
             success: function (res) {
+                debugger;
                 console.log(res)
                 if (res.success == true) {
                     TalentUtil.notification.show("Profile updated sucessfully", "success", null, null)
@@ -52,13 +54,13 @@ export default class PhotoUpload extends Component {
     }
 
     fileSelectedChange() {
-       
+        debugger;
         let acceptedExt = ["image/png", "image/jpg", "image/jpeg", "image/gif"];
         
         let selectedFile = event.target.files[0];
         console.log(event.target.files[0]);
         if (this.state.newFile) {
-            URL.revokeObjectURL(newFile);
+            URL.revokeObjectURL(this.state.newFileUrl);
         }
         if (acceptedExt.includes(selectedFile.type)) {
             this.setState({
@@ -71,8 +73,7 @@ export default class PhotoUpload extends Component {
     
 
     render() {
-        
-        let imageId = this.props.imageId ? "http ://localhost:60290/"+this.props.imageId : "https://react.semantic-ui.com/images/wireframe/square-image.png";
+        let imageId = this.props.imageId ? this.props.imageId : "https://react.semantic-ui.com/images/wireframe/square-image.png";
         if (this.state.newFileUrl) {
             imageId = this.state.newFileUrl;
         }
