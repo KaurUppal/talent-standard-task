@@ -14,10 +14,11 @@ export default class PhotoUpload extends Component {
             newFile: null
         }
         this.fileSelectedChange = this.fileSelectedChange.bind(this);
-        this.fileUpload = this.fileUpload.bind(this);
+        //this.fileUpload = this.fileUpload.bind(this);
     };
 
     fileUpload() {
+        debugger;
         let file = this.state.newFile;
         const form = new FormData();
         form.append('files', file);
@@ -71,7 +72,7 @@ export default class PhotoUpload extends Component {
 
     render() {
         
-        let imageId = this.props.imageId ? this.props.imageId : "https://react.semantic-ui.com/images/wireframe/square-image.png";
+        let imageId = this.props.imageId ? "http ://localhost:60290/"+this.props.imageId : "https://react.semantic-ui.com/images/wireframe/square-image.png";
         if (this.state.newFileUrl) {
             imageId = this.state.newFileUrl;
         }

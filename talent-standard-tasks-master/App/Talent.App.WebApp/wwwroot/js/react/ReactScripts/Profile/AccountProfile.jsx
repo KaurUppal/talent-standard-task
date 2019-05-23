@@ -26,7 +26,8 @@ export default class AccountProfile extends React.Component {
         this.state = {
             profileData: {
                 address: {},
-                description: {},
+                description: "",
+                summary:"",
                 nationality: '',
                 education: [],
                 languages: [],
@@ -93,7 +94,7 @@ export default class AccountProfile extends React.Component {
 
     //updates component's state and saves data
     updateAndSaveData(newValues) {
-        debugger;
+       
         let newProfile = Object.assign({}, this.state.profileData, newValues)
         this.setState({
             profileData: newProfile
@@ -136,6 +137,10 @@ export default class AccountProfile extends React.Component {
 
     render() {
         const address = this.state.profileData.address;
+        const description = {
+            description: this.state.profileData.description,
+            summary: this.state.profileData.summary
+        };
 
         console.log("address length " + Object.keys(address).length);
         const profile = {
@@ -169,7 +174,7 @@ export default class AccountProfile extends React.Component {
                                             tooltip='Enter your description'
                                         >
                                             <Description
-                                                description={this.state.profileData.description}
+                                                description={description}
                                                 updateStateData={this.updateWithoutSave}
                                                 saveProfileData={this.updateAndSaveData}
                                             />

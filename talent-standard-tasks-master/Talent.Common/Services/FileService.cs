@@ -33,9 +33,8 @@ namespace Talent.Common.Services
             string pathWeb = _environment.WebRootPath;
             if (id != null && type == FileType.ProfilePhoto)
             {
-                string pathString = pathWeb + _tempFolder ;
-                fileUrl = pathString + id;
-                
+                string pathValue = pathWeb + _tempFolder ;
+                fileUrl = pathValue + id;
             }
             return fileUrl;
         }
@@ -49,12 +48,12 @@ namespace Talent.Common.Services
 
             if (file != null && type == FileType.ProfilePhoto && pathWeb != "")
             {
-                string pathString = pathWeb + _tempFolder;
+                string pathValue = pathWeb + _tempFolder;
                 myUniqueFileName = $@"{DateTime.Now.Ticks}_" + file.FileName;
-                var path = pathString + myUniqueFileName;
+                var path = pathValue + myUniqueFileName;
                 using (var fileStream = new FileStream(path, FileMode.Create))
                 {
-                   await file.CopyToAsync(fileStream);
+                    await file.CopyToAsync(fileStream);
                 }
                 Console.WriteLine(path);
             }

@@ -83,6 +83,8 @@ namespace Talent.Services.Profile.Domain.Services
                     ProfilePhotoUrl = profile.ProfilePhotoUrl,
                     LinkedAccounts = profile.LinkedAccounts,
                     JobSeekingStatus = profile.JobSeekingStatus,
+                    Description = profile.Description,
+                    Summary = profile.Summary,
                     Email = profile.Email,
                     FirstName = profile.FirstName,
                     LastName = profile.LastName,
