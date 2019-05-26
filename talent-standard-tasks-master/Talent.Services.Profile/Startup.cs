@@ -93,12 +93,14 @@ namespace Talent.Services.Profile
             }
             app.UseCors("AllowWebAppAccess");
             app.UseMvc();
+            // for static files
+            app.UseStaticFiles(); // For the wwwroot folder
 
-            app.UseFileServer(new FileServerOptions
+            app.UseStaticFiles(new StaticFileOptions
             {
                 FileProvider = new PhysicalFileProvider(
-                env.ContentRootPath + "\\images"),
-                EnableDirectoryBrowsing = true
+                    Path.Combine(Directory.GetCurrentDirectory(), "images")),
+                RequestPath = "/images"
             });
         }
     }

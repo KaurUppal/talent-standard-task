@@ -34,8 +34,7 @@ namespace Talent.Common.Services
 
             if (id != null && type == FileType.ProfilePhoto)
             {
-                var pathValue = pathWeb + _tempFolder ;
-                fileUrl = pathValue + id;
+                fileUrl = "/images/"+ id;
             }
             return fileUrl;
         }

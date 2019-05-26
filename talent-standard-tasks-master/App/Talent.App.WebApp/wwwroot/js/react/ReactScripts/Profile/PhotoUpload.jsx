@@ -6,24 +6,33 @@ import { Button } from 'semantic-ui-react'
 export default class PhotoUpload extends Component {
     constructor(props) {
         super(props);
-        const imageId = props.imageId ? props.imageId : "https://react.semantic-ui.com/images/wireframe/square-image.png"
+        //const imageId = props.imageId ? props.imageId : "https://react.semantic-ui.com/images/wireframe/square-image.png"
         this.state = {
-            imageId: imageId,
+           // imageId: imageId,
             uploadButton: "none",
             newFileUrl: null,
             newFile: null
         }
         this.fileSelectedChange = this.fileSelectedChange.bind(this);
         this.fileUpload = this.fileUpload.bind(this);
+        this.uploadAndSave = this.uploadAndSave.bind(this);
     };
 
-    fileUpload() {
+    uploadAndSave() {
         debugger;
         let file = this.state.newFile;
         const form = new FormData();
         form.append('file', file);
-        var url = this.props.savePhotoUrl;
+        let profilePhotoUrl = "/images/" + file.name;
+        console.log(profilePhotoUrl);
+        this.props.updateProfileData({
+            profilePhotoUrl
+        });
+        this.fileUpload(form);
+    }
 
+    fileUpload(form) {
+        var url = this.props.savePhotoUrl;
         var cookies = Cookies.get('talentAuthToken');
         $.ajax({
             url: url,
@@ -73,11 +82,14 @@ export default class PhotoUpload extends Component {
     
 
     render() {
-        let imageId = this.props.imageId ? this.props.imageId : "https://react.semantic-ui.com/images/wireframe/square-image.png";
+        let server = this.props.savePhotoUrl;
+        let n = server.search("/profile");
+        let url = server.slice(0, n);
+        let imageId = this.props.imageId ? url + this.props.imageId : "https://react.semantic-ui.com/images/wireframe/square-image.png";
         if (this.state.newFileUrl) {
             imageId = this.state.newFileUrl;
         }
-        
+        debugger;
         return (
             <div className="ui two column grid">
                 <div className="column">
@@ -87,8 +99,8 @@ export default class PhotoUpload extends Component {
                     <Button htmlFor="file" as="label" className="ui small circular image" ><img src={imageId}
                         />
                     </Button>
-                        <br></br>
-                        <button type="submit" style={{ display: this.state.uploadButton, }} onClick={this.fileUpload} className="ui teal button"><i className="upload icon"></i>Upload</button>
+                    <br></br>
+                    <button type="submit" style={{ display: this.state.uploadButton, }} onClick={this.uploadAndSave} className="ui teal button"><i className="upload icon"></i>Upload</button>
                         <input type="file" id="file" style={{ display: "none" }} onChange={this.fileSelectedChange} />  
                 </div>
                 

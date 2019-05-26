@@ -6,11 +6,13 @@ import TalentCardDetail from '../TalentFeed/TalentCardDetail.jsx';
 import CompanyProfile from '../TalentFeed/CompanyProfile.jsx';
 import FollowingSuggestion from '../TalentFeed/FollowingSuggestion.jsx';
 
+
 export default class TalentDetail extends React.Component {
 
     constructor(props) {
         super(props)
     }
+
 
     //componentDidMount() {
     //    this.loadData()

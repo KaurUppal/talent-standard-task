@@ -4,7 +4,8 @@
 export default class FollowingSuggestion extends React.Component {
     render() {
         return (
-            <div className="content">
+            <div className="ui card">
+                <div className="content">
                 <div className="center aligned header">Follow Talent</div>
                 <div className="ui items following-suggestion">
                     <div className="item">
@@ -25,6 +26,7 @@ export default class FollowingSuggestion extends React.Component {
                             <button className="ui primary basic button"><i className="icon user"></i>Follow</button>
                         </div>
                     </div>
+                </div>
                 </div>
             </div>
         )

@@ -4,6 +4,8 @@ import ReactPlayer from 'react-player';
 
 export default class TalentCardDetail extends React.Component {
     render() {
-        
+        return (
+            <div></div>
+            )
     }
 }
