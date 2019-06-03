@@ -8,6 +8,7 @@ using System.Linq.Expressions;
 using System.Text;
 using System.Threading.Tasks;
 
+
 namespace Talent.Common.Services
 {
     public class Repository<T> : IRepository<T> where T : IMongoCommon, new()

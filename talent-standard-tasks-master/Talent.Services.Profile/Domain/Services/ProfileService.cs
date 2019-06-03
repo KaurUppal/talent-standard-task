@@ -12,6 +12,7 @@ using Talent.Services.Profile.Models;
 using Microsoft.AspNetCore.Http;
 using System.IO;
 using Talent.Common.Security;
+using System.Text;
 
 namespace Talent.Services.Profile.Domain.Services
 {
@@ -419,7 +420,75 @@ namespace Talent.Services.Profile.Domain.Services
         public async Task<IEnumerable<TalentSnapshotViewModel>> GetTalentSnapshotList(string employerOrJobId, bool forJob, int position, int increment)
         {
             //Your code here;
-            throw new NotImplementedException();
+            IQueryable<User> users =  _userRepository.Collection.Skip(position*increment).Take(increment);
+
+            //var returnTalents = new List<TalentSnapshotViewModel>();
+            //foreach (var user in users)
+            //{
+
+            //    TalentSnapshotViewModel talent = new TalentSnapshotViewModel();
+            //    talent.Id = user.Id;
+            //    //talent.Name = user.FirstName + " " + user.LastName;
+            //    //talent.PhotoId = user.ProfilePhoto;
+            //    //talent.VideoUrl = user.VideoName;
+            //    //talent.Skills = SkillsString(user.Skills);
+            //    //talent.CVUrl = user.CvName;
+            //    //talent.Summary = user.Summary;
+            //    //talent.CurrentEmployment = getCurrentEmployment(user.Experience);
+            //    //talent.Visa = user.VisaStatus;
+            //    //talent.Level = user.JobSeekingStatus.Status;
+            //    returnTalents.Add(talent);
+            //}
+            //return returnTalents.AsEnumerable();
+
+            IEnumerable<TalentSnapshotViewModel> returnTalents = users.Select(x => new TalentSnapshotViewModel
+            {
+                Id = x.Id,
+                Name = x.FirstName + " " + x.LastName,
+                PhotoId = x.ProfilePhoto,
+                VideoUrl = x.VideoName,
+                //Skills = SkillsString(x.Skills),
+                CVUrl = x.CvName,
+                Summary = x.Summary,
+                //CurrentEmployment = getCurrentEmployment(x.Experience),
+                Visa = x.VisaStatus,
+                Level = x.JobSeekingStatus.Status,
+            });
+            return returnTalents;
+        }
+
+        protected string IdCheck(string id)
+        {
+            string id1 = id;
+            return id1;
+        }
+
+        private string getCurrentEmployment(List<UserExperience> experiences)
+        {
+            var returnValue = "";
+            if (experiences != null)
+            {
+                var curretExperience = experiences[experiences.Count - 1];
+                returnValue = curretExperience.Company +
+                     "," +curretExperience.Position;
+                    
+            }
+
+            return returnValue;
+
+        }
+
+        protected List<string> SkillsString(List<UserSkill> skills)
+        {
+            List<string> returnValue = null;
+            if (skills != null)
+            {
+                foreach (var item in skills)
+                {
+                    returnValue.Add(item.Skill);
+                }
+            }
+            return returnValue;
         }
 
         public async Task<IEnumerable<TalentSnapshotViewModel>> GetTalentSnapshotList(IEnumerable<string> ids)
@@ -433,7 +502,42 @@ namespace Talent.Services.Profile.Domain.Services
         public async Task<IEnumerable<TalentSuggestionViewModel>> GetFullTalentList()
         {
             //Your code here;
-            throw new NotImplementedException();
+            
+            IEnumerable<User> users = await _userRepository.Get(x => x.IsDeleted == false);
+
+            IEnumerable<TalentSuggestionViewModel> returnUsers
+                = users.Select(x => new TalentSuggestionViewModel
+                {
+                    Id = x.Id,
+                    Name = x.FirstName + " " + x.LastName,
+                    City = x.Location.City,
+                    Country = x.Location.Country,
+                    PhotoId = x.ProfilePhotoUrl,
+                    Summary = x.Summary,
+                    Position = x.Experience[0].Position.ToString(),
+                    WorkExperience = x.Experience.Select(ex => ExperienceString(ex)).ToList(),
+                   // Skills = x.Skills.Select(skill => SkillsString(skill)).ToList(),
+                    VisaStatus = x.VisaStatus,
+                    VisaExpiryDate = x.VisaExpiryDate,
+                    Education = x.Education.ToString(),
+                    CvUrl = x.CvName,
+                    VideoUrl = x.Videos.FirstOrDefault().FullVideoName,
+                    LinkedAccounts = x.LinkedAccounts
+                });
+            return returnUsers;
+        }
+
+       
+
+        protected string ExperienceString(UserExperience experience)
+        {
+            string returnValue = "";
+            returnValue =
+                "Position: " +experience.Position +
+                ", Responsibilities: " + experience.Responsibilities + 
+                ", Start: " + experience.Start+
+                ", End: " +experience.End;
+            return returnValue;
         }
 
         public IEnumerable<TalentMatchingEmployerViewModel> GetEmployerList()

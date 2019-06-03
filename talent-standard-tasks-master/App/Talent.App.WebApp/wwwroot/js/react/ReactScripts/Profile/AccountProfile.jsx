@@ -86,7 +86,6 @@ export default class AccountProfile extends React.Component {
     //updates component's state without saving data
     updateWithoutSave(newValues) {
         let newProfile = Object.assign({}, this.state.profileData, newValues);
-        console.log("in  updateWithoutSave " + newProfile.address.number);
         this.setState({
             profileData: newProfile
         })
