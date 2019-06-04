@@ -426,7 +426,8 @@ namespace Talent.Services.Profile.Domain.Services
             foreach (var user in users)
             {
                 var skills = user.Skills.Select(x => ViewModelFromSkill(x).Name).ToList();
-                var currentEmployment = user.Experience.Count != 0 ? getCurrentEmployment(user.Experience):null;
+                var currentEmployment = GetCurrentExperience(user.Experience);
+ 
                 var talent = new TalentSnapshotViewModel
                 {
                     Id = user.Id,
@@ -435,7 +436,7 @@ namespace Talent.Services.Profile.Domain.Services
                     VideoUrl = user.VideoName,
                     CVUrl = user.CvName,
                     Summary = user.Summary,
-                    Level = user.JobSeekingStatus != null ? user.JobSeekingStatus.Status:null,
+                    Level = user.JobSeekingStatus?.Status,
                     CurrentEmployment = currentEmployment,
                     Skills =skills
                 };
@@ -445,31 +446,16 @@ namespace Talent.Services.Profile.Domain.Services
 
         }
 
-        protected string IdCheck(string id)
+        protected string GetCurrentExperience(List<UserExperience> experiences)
         {
-            string id1 = id;
-            return id1;
-        }
-
-        private string getCurrentEmployment(List<UserExperience> experiences)
-        {
-            var returnValue = "";
-            
-            var curretExperience = experiences[0];
-            returnValue = curretExperience.Company +
-                    "," +curretExperience.Position;
-            return returnValue;
-
-        }
-
-        protected string SkillsString(UserSkill skill)
-        {
-            string returnValue = "";
-            if (skill != null)
+            string currentEmployment = null;
+            if (experiences.Count > 0)
             {
-                returnValue = skill.Skill;
+                var lastExperience = ViewModelFromExperience(experiences[experiences.Count - 1]);
+                if (lastExperience.End >= DateTime.Now)
+                    currentEmployment = lastExperience.Company + "," + lastExperience.Position;
             }
-            return returnValue;
+            return currentEmployment;
         }
 
         public async Task<IEnumerable<TalentSnapshotViewModel>> GetTalentSnapshotList(IEnumerable<string> ids)
