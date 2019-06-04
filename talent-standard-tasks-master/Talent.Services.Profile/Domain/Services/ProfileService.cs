@@ -425,8 +425,8 @@ namespace Talent.Services.Profile.Domain.Services
             var returnTalents = new List<TalentSnapshotViewModel>();
             foreach (var user in users)
             {
-                var skills = user.Skills.Select(x => SkillsString(x)).ToList();
-                var currentEmployment = getCurrentEmployment(user.Experience);
+                var skills = user.Skills.Select(x => ViewModelFromSkill(x).Name).ToList();
+                var currentEmployment = user.Experience.Count != 0 ? getCurrentEmployment(user.Experience):null;
                 var talent = new TalentSnapshotViewModel
                 {
                     Id = user.Id,
@@ -435,8 +435,7 @@ namespace Talent.Services.Profile.Domain.Services
                     VideoUrl = user.VideoName,
                     CVUrl = user.CvName,
                     Summary = user.Summary,
-                    Visa = user.VisaStatus,
-                    Level = user.JobSeekingStatus.Status,
+                    Level = user.JobSeekingStatus != null ? user.JobSeekingStatus.Status:null,
                     CurrentEmployment = currentEmployment,
                     Skills =skills
                 };
@@ -455,14 +454,10 @@ namespace Talent.Services.Profile.Domain.Services
         private string getCurrentEmployment(List<UserExperience> experiences)
         {
             var returnValue = "";
-            if (experiences != null)
-            {
-                var curretExperience = experiences[experiences.Count - 1];
-                returnValue = curretExperience.Company +
-                     "," +curretExperience.Position;
-                    
-            }
-
+            
+            var curretExperience = experiences[0];
+            returnValue = curretExperience.Company +
+                    "," +curretExperience.Position;
             return returnValue;
 
         }
