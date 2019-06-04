@@ -422,39 +422,28 @@ namespace Talent.Services.Profile.Domain.Services
             //Your code here;
             IQueryable<User> users =  _userRepository.Collection.Skip(position*increment).Take(increment);
 
-            //var returnTalents = new List<TalentSnapshotViewModel>();
-            //foreach (var user in users)
-            //{
-
-            //    TalentSnapshotViewModel talent = new TalentSnapshotViewModel();
-            //    talent.Id = user.Id;
-            //    //talent.Name = user.FirstName + " " + user.LastName;
-            //    //talent.PhotoId = user.ProfilePhoto;
-            //    //talent.VideoUrl = user.VideoName;
-            //    //talent.Skills = SkillsString(user.Skills);
-            //    //talent.CVUrl = user.CvName;
-            //    //talent.Summary = user.Summary;
-            //    //talent.CurrentEmployment = getCurrentEmployment(user.Experience);
-            //    //talent.Visa = user.VisaStatus;
-            //    //talent.Level = user.JobSeekingStatus.Status;
-            //    returnTalents.Add(talent);
-            //}
-            //return returnTalents.AsEnumerable();
-
-            IEnumerable<TalentSnapshotViewModel> returnTalents = users.Select(x => new TalentSnapshotViewModel
+            var returnTalents = new List<TalentSnapshotViewModel>();
+            foreach (var user in users)
             {
-                Id = x.Id,
-                Name = x.FirstName + " " + x.LastName,
-                PhotoId = x.ProfilePhoto,
-                VideoUrl = x.VideoName,
-                //Skills = SkillsString(x.Skills),
-                CVUrl = x.CvName,
-                Summary = x.Summary,
-                //CurrentEmployment = getCurrentEmployment(x.Experience),
-                Visa = x.VisaStatus,
-                Level = x.JobSeekingStatus.Status,
-            });
+                var skills = user.Skills.Select(x => SkillsString(x)).ToList();
+                var currentEmployment = getCurrentEmployment(user.Experience);
+                var talent = new TalentSnapshotViewModel
+                {
+                    Id = user.Id,
+                    Name = user.FirstName + " " + user.LastName,
+                    PhotoId = user.ProfilePhotoUrl,
+                    VideoUrl = user.VideoName,
+                    CVUrl = user.CvName,
+                    Summary = user.Summary,
+                    Visa = user.VisaStatus,
+                    Level = user.JobSeekingStatus.Status,
+                    CurrentEmployment = currentEmployment,
+                    Skills =skills
+                };
+                returnTalents.Add(talent);
+            }
             return returnTalents;
+
         }
 
         protected string IdCheck(string id)
@@ -478,15 +467,12 @@ namespace Talent.Services.Profile.Domain.Services
 
         }
 
-        protected List<string> SkillsString(List<UserSkill> skills)
+        protected string SkillsString(UserSkill skill)
         {
-            List<string> returnValue = null;
-            if (skills != null)
+            string returnValue = "";
+            if (skill != null)
             {
-                foreach (var item in skills)
-                {
-                    returnValue.Add(item.Skill);
-                }
+                returnValue = skill.Skill;
             }
             return returnValue;
         }
